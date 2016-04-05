@@ -1,0 +1,83 @@
+<html>
+<head>
+	<title>Survey Form Revisited</title>
+		<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	
+	<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+
+	<script type="text/javascript">
+		$(document).ready(function(){
+			var socket = io.connect();
+			$('#survey_form').submit(function(e){
+				e.preventDefault();
+				socket.emit('posting_form', {
+					name: $('#name').val(),
+					location: $('#location').val(),
+					language: $('#language').val(),
+					comment: $('#comment').val()
+				});
+			});
+			socket.on('updated_message', function(data){
+				$('#message').html('You emitted the following information to the server: ' + JSON.stringify(data.response));
+			});
+			socket.on('random_number', function(data){
+				$('#number').html('Youre lucky number emitted by the server is ' + JSON.stringify(data.response));
+			})
+		});
+	</script>
+
+</head>
+<body>
+	<div class='container'>
+		<div id="message"></div>
+		<div id="number"></div>
+		<div class="form">
+			<form action="/" id="survey_form">
+			  <div class="form-group">
+			    <label class="control-label col-sm-2" for="text">Your Name:</label>
+			    <div class="col-sm-10">
+			      <input type="text" class="form-control" id="name" name="name" placeholder="Enter your name">
+			    </div>
+			  </div>
+				<div class="form-group">
+				  <label for="sel1">Dojo Location:</label>
+				  <select class="form-control" id="location" name='location'>
+				    <option>Mountain View</option>
+				    <option>San Jose</option>
+				    <option>Bellavue</option>
+				    <option>Dallas</option>
+				  </select>
+				</div>			
+				<div class="form-group">
+				  <label for="sel1">Favorite Language:</label>
+				  <select class="form-control" id="language" name="language">
+				    <option>Javascript</option>
+				    <option>PHP</option>
+				    <option>Python</option>
+				    <option>Ruby</option>
+				  </select>
+				</div>
+
+				<div class="form-group">
+				  <label for="comment">Comment:</label>
+				  <textarea class="form-control" rows="5" id="comment" name='comment'></textarea>
+				</div>
+			  <div class="form-group">
+			    <div class="col-sm-offset-2 col-sm-10">
+			      <button type="submit" class="btn btn-default">Submit</button>
+			    </div>
+			  </div>
+			</form>
+		</div>
+	</div>
+</body>
+</html>
